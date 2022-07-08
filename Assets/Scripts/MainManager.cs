@@ -18,10 +18,16 @@ public class MainManager : MonoBehaviour
     
     private bool m_GameOver = false;
 
+    public Text HighScoreText;
     
     // Start is called before the first frame update
     void Start()
     {
+        if (PersistentDataManager.Instance != null)
+        {
+            DrawHighScore();
+        }
+        
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -72,5 +78,22 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        
+        // Check if this is a new high score.
+        if (m_Points > PersistentDataManager.Instance.highScoreValue)
+        {
+            // Save the new high score.
+            PersistentDataManager.Instance.highScoreValue = m_Points;
+            PersistentDataManager.Instance.highScoreName = PersistentDataManager.Instance.playerName;
+            PersistentDataManager.Instance.SaveHighScore();
+            
+            // Draw the new high score.
+        }
+    }
+    
+    void DrawHighScore()
+    {
+        HighScoreText.text = $"High Score: {PersistentDataManager.Instance.highScoreValue} ("+
+            PersistentDataManager.Instance.highScoreName+")";
     }
 }
